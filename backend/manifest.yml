@@ -1,0 +1,98 @@
+name: FlavorFind
+
+entities:
+  User:
+    authenticable: true
+    properties:
+      - name
+      - name: email
+        type: email
+    policies:
+      create:
+        - access: admin
+      read:
+        - access: restricted
+          allow: User
+          condition: self
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: admin
+      signup:
+        - access: public
+
+  Restaurant:
+    properties:
+      - name: name
+        type: string
+      - name: description
+        type: text
+      - name: cuisine
+        type: choice
+        options:
+          values: [Italian, Mexican, Japanese, Indian, American, Other]
+      - name: photo
+        type: image
+        options:
+          sizes:
+            thumbnail:
+              width: 400
+              height: 400
+    belongsTo:
+      - name: owner
+        entity: User
+    policies:
+      create:
+        - access: restricted
+          allow: User
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: restricted
+          allow: User
+          condition: self
+
+  MenuItem:
+    properties:
+      - name: name
+        type: string
+      - name: description
+        type: text
+      - name: price
+        type: money
+        options:
+          currency: 'USD'
+    belongsTo:
+      - name: restaurant
+        entity: Restaurant
+      - name: owner
+        entity: User
+    policies:
+      create:
+        - access: restricted
+          allow: User
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: User
+          condition: self
+      delete:
+        - access: restricted
+          allow: User
+          condition: self
+
+
+# Health check endpoint for connection testing
+endpoints:
+  health:
+    path: /api/health
+    method: GET
+    policies: []
+    handler: healthCheck
